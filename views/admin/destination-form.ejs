@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= isEdit ? 'Edit Destination' : 'Add Destination' %> – SkyTour Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+<div class="admin-wrapper">
+    <%- include('sidebar', { activePage: 'destinations' }) %>
+
+    <div class="admin-main">
+        <%- include('topbar', { pageTitle: isEdit ? `Edit: ${dest.name}` : 'Add Destination' }) %>
+
+        <div class="admin-content">
+            <div style="margin-bottom: 20px;">
+                <a href="/admin/destinations" class="btn-action btn-view"><i class="fas fa-arrow-left"></i> Back to Destinations</a>
+            </div>
+
+            <div class="admin-card" style="max-width: 800px;">
+                <form action="<%= isEdit ? `/admin/destinations/edit/${dest.id}` : '/admin/destinations/add' %>" method="POST" class="admin-form">
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Destination Name *</label>
+                            <input type="text" name="name" value="<%= dest.name || '' %>" placeholder="e.g. Kashmir, Bali, Goa" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Country *</label>
+                            <input type="text" name="country" value="<%= dest.country || '' %>" placeholder="e.g. India, Indonesia" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Short Description (card snippet) *</label>
+                        <input type="text" name="short_desc" value="<%= dest.short_desc || '' %>" placeholder="Brief 1-sentence tagline" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Full Overview / Description *</label>
+                        <textarea name="description" rows="5" placeholder="Detailed description of the destination..." required><%= dest.description || '' %></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Image URL *</label>
+                        <input type="url" name="image_url" value="<%= dest.image_url || '' %>" placeholder="https://images.unsplash.com/..." required>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Best Time to Visit</label>
+                            <input type="text" name="best_time" value="<%= dest.best_time || '' %>" placeholder="e.g. October to March">
+                        </div>
+                        <div class="form-group">
+                            <label>Climate</label>
+                            <input type="text" name="climate" value="<%= dest.climate || '' %>" placeholder="e.g. Tropical, Alpine">
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Languages Spoken</label>
+                            <input type="text" name="language" value="<%= dest.language || '' %>" placeholder="e.g. English, Hindi">
+                        </div>
+                        <div class="form-group">
+                            <label>Local Currency</label>
+                            <input type="text" name="currency" value="<%= dest.currency || '' %>" placeholder="e.g. Indian Rupee (INR)">
+                        </div>
+                    </div>
+
+                    <% if (isEdit) { %>
+                    <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" name="is_active" id="is_active" value="1" <%= dest.is_active ? 'checked' : '' %> style="width: auto;">
+                        <label for="is_active" style="margin-bottom: 0; cursor: pointer;">Destination is Active</label>
+                    </div>
+                    <% } %>
+
+                    <div style="display: flex; gap: 12px; margin-top: 24px;">
+                        <button type="submit" class="btn-primary btn-lg"><%= isEdit ? 'Save Changes' : 'Create Destination' %></button>
+                        <a href="/admin/destinations" class="btn-secondary btn-lg">Cancel</a>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

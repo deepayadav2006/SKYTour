@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= customer.full_name %> – Customer Details</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+<div class="admin-wrapper">
+    <%- include('sidebar', { activePage: 'customers' }) %>
+
+    <div class="admin-main">
+        <%- include('topbar', { pageTitle: `Customer: ${customer.full_name}` }) %>
+
+        <div class="admin-content">
+            <div style="margin-bottom: 20px;">
+                <a href="/admin/customers" class="btn-action btn-view"><i class="fas fa-arrow-left"></i> Back to Customers</a>
+            </div>
+
+            <!-- Customer Overview -->
+            <div class="admin-card" style="margin-bottom: 24px;">
+                <div class="admin-card-header">
+                    <h2><i class="fas fa-id-card"></i> Profile Details</h2>
+                </div>
+                <div class="form-grid-3">
+                    <div>
+                        <strong style="color: var(--admin-muted); font-size: 12px; text-transform: uppercase;">Full Name</strong>
+                        <p style="font-size: 16px; font-weight: 700; color: var(--admin-text);"><%= customer.full_name %></p>
+                    </div>
+                    <div>
+                        <strong style="color: var(--admin-muted); font-size: 12px; text-transform: uppercase;">Email Address</strong>
+                        <p style="font-size: 16px; font-weight: 600; color: var(--admin-primary);"><%= customer.email %></p>
+                    </div>
+                    <div>
+                        <strong style="color: var(--admin-muted); font-size: 12px; text-transform: uppercase;">Phone Number</strong>
+                        <p style="font-size: 16px; font-weight: 600;"><%= customer.phone || 'N/A' %></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer's Bookings -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2><i class="fas fa-ticket-alt"></i> Booking History (<%= bookings.length %>)</h2>
+                </div>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Ref #</th>
+                                <th>Package</th>
+                                <th>Destination</th>
+                                <th>Travel Date</th>
+                                <th>Travelers</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (bookings.length === 0) { %>
+                            <tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--admin-muted);">No bookings from this customer yet.</td></tr>
+                            <% } %>
+                            <% bookings.forEach(b => { %>
+                            <tr>
+                                <td><strong>#<%= b.booking_ref %></strong></td>
+                                <td><%= b.package_name %></td>
+                                <td><%= b.destination_name %></td>
+                                <td><%= new Date(b.travel_date).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'}) %></td>
+                                <td><%= b.num_travelers %></td>
+                                <td><strong>₹<%= Number(b.total_price).toLocaleString('en-IN') %></strong></td>
+                                <td><span class="badge-status badge-<%= b.status %>"><%= b.status %></span></td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

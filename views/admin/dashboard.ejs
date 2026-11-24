@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard – SkyTour</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+<div class="admin-wrapper">
+    <%- include('sidebar', { activePage: 'dashboard' }) %>
+
+    <div class="admin-main">
+        <%- include('topbar', { pageTitle: 'Dashboard Overview' }) %>
+
+        <div class="admin-content">
+            <% if (success) { %>
+            <div class="admin-alert admin-alert-success"><i class="fas fa-check-circle"></i> <%= success %></div>
+            <% } %>
+
+            <!-- Metric Cards -->
+            <div class="admin-stats-grid">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span>Total Customers</span>
+                        <h3><%= stats.totalCustomers || 0 %></h3>
+                    </div>
+                    <div class="stat-icon-wrap" style="background: #e0f2fe; color: #0284c7;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span>Total Bookings</span>
+                        <h3><%= stats.totalBookings || 0 %></h3>
+                    </div>
+                    <div class="stat-icon-wrap" style="background: #fef3c7; color: #d97706;">
+                        <i class="fas fa-ticket-alt"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span>Confirmed / Completed</span>
+                        <h3><%= (stats.confirmed || 0) + (stats.completed || 0) %></h3>
+                    </div>
+                    <div class="stat-icon-wrap" style="background: #dcfce7; color: #16a34a;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span>Estimated Revenue</span>
+                        <h3>₹<%= Number(stats.totalRevenue || 0).toLocaleString('en-IN') %></h3>
+                    </div>
+                    <div class="stat-icon-wrap" style="background: #ffedd5; color: #ea580c;">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secondary Stats: Destinations & Packages -->
+            <div class="admin-stats-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 32px;">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span>Active Destinations</span>
+                        <h3><%= stats.totalDests || 0 %></h3>
+                    </div>
+                    <div class="stat-icon-wrap" style="background: #f3e8ff; color: #9333ea;">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span>Active Tour Packages</span>
+                        <h3><%= stats.totalPackages || 0 %></h3>
+                    </div>
+                    <div class="stat-icon-wrap" style="background: #e0e7ff; color: #4f46e5;">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Bookings Table -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h2><i class="fas fa-history"></i> Recent Booking Requests</h2>
+                    <a href="/admin/bookings" class="btn-primary" style="font-size: 13px; padding: 6px 14px;">View All Bookings</a>
+                </div>
+
+                <% if (recentBookings.length === 0) { %>
+                <div class="empty-state">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h3>No bookings recorded yet</h3>
+                    <p>New customer bookings will appear here in real time.</p>
+                </div>
+                <% } else { %>
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Ref #</th>
+                                <th>Customer</th>
+                                <th>Package</th>
+                                <th>Destination</th>
+                                <th>Travel Date</th>
+                                <th>Travelers</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% recentBookings.forEach(b => { %>
+                            <tr>
+                                <td><strong>#<%= b.booking_ref %></strong></td>
+                                <td><%= b.customer_name %></td>
+                                <td><%= b.package_name %></td>
+                                <td><%= b.destination_name %></td>
+                                <td><%= new Date(b.travel_date).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'}) %></td>
+                                <td><%= b.num_travelers %></td>
+                                <td><strong>₹<%= Number(b.total_price).toLocaleString('en-IN') %></strong></td>
+                                <td>
+                                    <span class="badge-status badge-<%= b.status %>"><%= b.status %></span>
+                                </td>
+                                <td>
+                                    <a href="/admin/bookings?search=<%= b.booking_ref %>" class="btn-action btn-view"><i class="fas fa-eye"></i> Manage</a>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+                <% } %>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

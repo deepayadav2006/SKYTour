@@ -1,0 +1,108 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<% if (success) { %>
+<div class="flash-msg flash-success"><i class="fas fa-check-circle"></i> <%= success %></div>
+<% } %>
+<% if (error) { %>
+<div class="flash-msg flash-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+<% } %>
+
+<section class="dashboard-section">
+    <div class="container">
+        <div class="dashboard-layout">
+            <aside class="dash-sidebar">
+                <ul class="dash-menu">
+                    <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li class="active"><a href="/dashboard/bookings"><i class="fas fa-ticket-alt"></i> My Bookings</a></li>
+                    <li><a href="/dashboard/profile"><i class="fas fa-user-edit"></i> My Profile</a></li>
+                    <li><a href="/booking"><i class="fas fa-plus-circle"></i> New Booking</a></li>
+                    <li><a href="/packages"><i class="fas fa-box"></i> Browse Packages</a></li>
+                    <li class="dash-divider"></li>
+                    <li><a href="/logout" class="dash-logout"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </aside>
+            <div class="dash-main">
+                <div class="dash-section-header">
+                    <div>
+                        <h2><i class="fas fa-ticket-alt"></i> My Travel Bookings</h2>
+                        <p style="color:var(--text-muted);font-size:14px;margin-top:4px;">View your confirmed itineraries, download e-tickets, and manage payments.</p>
+                    </div>
+                    <a href="/booking" class="btn-primary"><i class="fas fa-plus"></i> Book Another Trip</a>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="bookings-filter">
+                    <a href="/dashboard/bookings" class="filter-tab <%=filterStatus===''?'active':''%>">All Bookings</a>
+                    <a href="/dashboard/bookings?status=confirmed" class="filter-tab <%=filterStatus==='confirmed'?'active':''%>">Confirmed</a>
+                    <a href="/dashboard/bookings?status=pending" class="filter-tab <%=filterStatus==='pending'?'active':''%>">Pending</a>
+                    <a href="/dashboard/bookings?status=completed" class="filter-tab <%=filterStatus==='completed'?'active':''%>">Completed</a>
+                    <a href="/dashboard/bookings?status=cancelled" class="filter-tab <%=filterStatus==='cancelled'?'active':''%>">Cancelled</a>
+                </div>
+
+                <% if (bookings.length === 0) { %>
+                <div class="empty-state">
+                    <i class="fas fa-ticket-alt"></i>
+                    <h3>No bookings found</h3>
+                    <p>Start planning your next adventure today!</p>
+                    <a href="/packages" class="btn-primary" style="margin-top:12px;">Browse Tour Packages</a>
+                </div>
+                <% } else { %>
+                <div class="my-bookings-list">
+                    <% bookings.forEach(b => { %>
+                    <div class="my-booking-card">
+                        <img src="<%= b.package_image %>" alt="<%= b.package_name %>" class="booking-card-img">
+                        <div class="booking-card-info">
+                            <div class="booking-ref-top">
+                                <strong>#<%= b.booking_ref %></strong>
+                                <div style="display:flex;gap:6px;align-items:center;">
+                                    <span class="status-badge status-<%= b.status %>"><%= b.status.charAt(0).toUpperCase()+b.status.slice(1) %></span>
+                                    <% if (b.payment_status === 'paid') { %>
+                                        <span class="status-badge status-paid"><i class="fas fa-check-circle"></i> Paid</span>
+                                    <% } else if (b.status !== 'cancelled') { %>
+                                        <span class="status-badge status-pending"><i class="fas fa-clock"></i> Pay on Arrival</span>
+                                    <% } %>
+                                </div>
+                            </div>
+                            <h4><%= b.package_name %></h4>
+                            <p><i class="fas fa-map-marker-alt"></i> <%= b.destination_name %></p>
+                            <div class="booking-meta">
+                                <span><i class="fas fa-calendar"></i> <%= new Date(b.travel_date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) %></span>
+                                <span><i class="fas fa-users"></i> <%= b.num_travelers %> Traveler(s)</span>
+                                <span><i class="fas fa-clock"></i> <%= b.duration_days %> Days</span>
+                                <span><i class="fas fa-wallet"></i> <%= (b.payment_mode || 'card').toUpperCase() %></span>
+                            </div>
+                        </div>
+
+                        <div class="booking-card-price">
+                            <strong>₹<%= Number(b.total_price).toLocaleString('en-IN') %></strong>
+                            <small>Total Fare</small>
+
+                            <div class="booking-card-actions">
+                                <a href="/booking/confirmation/<%= b.booking_ref %>" class="btn-sm btn-outline-primary">
+                                    <i class="fas fa-receipt"></i> E-Ticket
+                                </a>
+
+                                <% if (b.payment_status !== 'paid' && b.status !== 'cancelled') { %>
+                                <a href="/booking/confirmation/<%= b.booking_ref %>" class="btn-sm btn-primary">
+                                    <i class="fas fa-bolt"></i> Pay Now
+                                </a>
+                                <% } %>
+
+                                <% if (['pending','confirmed'].includes(b.status)) { %>
+                                <form action="/booking/cancel/<%= b.id %>" method="POST" onsubmit="return confirm('Are you sure you want to cancel this booking?')" style="margin:0;">
+                                    <button type="submit" class="btn-cancel">Cancel</button>
+                                </form>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

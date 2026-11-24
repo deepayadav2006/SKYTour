@@ -1,0 +1,286 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<!-- Flash Messages -->
+<% if (success) { %>
+<div class="flash-msg flash-success"><i class="fas fa-check-circle"></i> <%= success %></div>
+<% } %>
+<% if (error) { %>
+<div class="flash-msg flash-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+<% } %>
+
+<!-- HERO SECTION -->
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-glow-orb orb-1"></div>
+    <div class="hero-glow-orb orb-2"></div>
+    <div class="container hero-inner-container">
+        <div class="hero-content">
+            <div class="hero-badge-pill">
+                <span class="badge-pulse-dot"></span>
+                <span>Trusted by 50,000+ Happy Travelers Worldwide</span>
+            </div>
+            <h1>
+                Your Next Adventure<br>
+                <span class="gradient-headline">Starts Right Here.</span>
+            </h1>
+            <p>Discover hand-crafted journeys, 5-star luxury escapes, and thrilling expeditions across the world’s most breathtaking destinations.</p>
+            <div class="hero-buttons">
+                <a href="#packages" class="btn-hero">Explore All Packages <i class="fas fa-arrow-right"></i></a>
+                <a href="/destinations" class="btn-hero-glass">Browse 14 Destinations</a>
+            </div>
+            <div class="hero-stats-glass">
+                <div class="hero-stat">
+                    <strong>14+</strong>
+                    <span>Top Destinations</span>
+                </div>
+                <div class="hero-stat-sep"></div>
+                <div class="hero-stat">
+                    <strong>28+</strong>
+                    <span>Curated Packages</span>
+                </div>
+                <div class="hero-stat-sep"></div>
+                <div class="hero-stat">
+                    <strong>4.9 ★</strong>
+                    <span>Customer Rating</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEARCH SECTION (Floating Pod) -->
+<section class="search-section">
+    <div class="container">
+        <form class="search-box-pod" action="/packages" method="GET">
+            <div class="search-pod-header">
+                <span class="pod-title"><i class="fas fa-compass"></i> Find Your Dream Vacation</span>
+                <span class="pod-sub">Instant live availability across 28 tour packages</span>
+            </div>
+            <div class="search-fields-grid">
+                <div class="search-field">
+                    <label><i class="fas fa-map-marker-alt"></i> Destination</label>
+                    <select name="destination">
+                        <option value="">All 14 Destinations</option>
+                        <% if (typeof destinations !== 'undefined' && destinations) { %>
+                            <% destinations.forEach(d => { %>
+                                <option value="<%= d.name %>"><%= d.name %>, <%= d.country %></option>
+                            <% }) %>
+                        <% } %>
+                    </select>
+                </div>
+                <div class="search-field">
+                    <label><i class="fas fa-layer-group"></i> Category</label>
+                    <select name="category">
+                        <option value="">All Categories</option>
+                        <option value="luxury">💎 Luxury</option>
+                        <option value="adventure">🥾 Adventure</option>
+                        <option value="honeymoon">💖 Honeymoon</option>
+                        <option value="family">👥 Family</option>
+                        <option value="budget">👛 Budget</option>
+                        <option value="cultural">🏛️ Cultural</option>
+                    </select>
+                </div>
+                <div class="search-field">
+                    <label><i class="fas fa-wallet"></i> Max Budget</label>
+                    <select name="max_price">
+                        <option value="">Any Budget</option>
+                        <option value="25000">Under ₹25,000</option>
+                        <option value="50000">Under ₹50,000</option>
+                        <option value="100000">Under ₹1,00,000</option>
+                        <option value="150000">Under ₹1,50,000</option>
+                    </select>
+                </div>
+                <button type="submit" class="search-btn-gradient">
+                    <i class="fas fa-search"></i>
+                    <span>Search Tours</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- POPULAR DESTINATIONS -->
+<section class="destinations-section" id="destinations">
+    <div class="section-heading">
+        <span>EXPLORE THE WORLD</span>
+        <h2>Popular Destinations</h2>
+        <p>Hand-picked destinations for every kind of traveler</p>
+    </div>
+    <div class="destination-grid">
+        <% if (typeof destinations !== 'undefined' && destinations && destinations.length > 0) { %>
+            <% destinations.forEach(dest => { %>
+            <a href="/destinations/<%= dest.id %>" class="destination-card">
+                <img src="<%= dest.image_url %>" alt="<%= dest.name %>" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80';">
+                <div class="dest-overlay">
+                    <h3><%= dest.name %></h3>
+                    <p><i class="fas fa-globe"></i> <%= dest.country %></p>
+                    <span class="dest-explore">Explore <i class="fas fa-arrow-right"></i></span>
+                </div>
+            </a>
+            <% }) %>
+        <% } %>
+    </div>
+    <div class="section-cta">
+        <a href="/destinations" class="btn-secondary">View All Destinations <i class="fas fa-arrow-right"></i></a>
+    </div>
+</section>
+
+<!-- FEATURED PACKAGES -->
+<section class="packages-section" id="packages">
+    <div class="section-heading">
+        <span>BEST VALUE TOURS</span>
+        <h2>Featured Tour Packages</h2>
+        <p>Carefully curated packages for the ultimate travel experience</p>
+    </div>
+    <div class="packages-grid">
+        <% if (typeof packages !== 'undefined' && packages && packages.length > 0) { %>
+            <% packages.forEach(pkg => { %>
+            <div class="package-card">
+                <div class="package-img-wrap">
+                    <img src="<%= pkg.image_url || pkg.image || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80' %>"
+                         alt="<%= pkg.name || pkg.package_name %>"
+                         loading="lazy"
+                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80';">
+                    <span class="package-badge badge-<%= (pkg.category || 'adventure').toLowerCase() %>">
+                        <i class="fas <%=
+                            pkg.category === 'luxury' ? 'fa-gem' :
+                            pkg.category === 'honeymoon' ? 'fa-heart' :
+                            pkg.category === 'family' ? 'fa-users' :
+                            pkg.category === 'budget' ? 'fa-wallet' :
+                            pkg.category === 'cultural' ? 'fa-landmark' :
+                            'fa-hiking'
+                        %>"></i>
+                        <%= (pkg.category || 'adventure').charAt(0).toUpperCase() + (pkg.category || 'adventure').slice(1) %>
+                    </span>
+                    <button class="card-wishlist-btn" title="Save to wishlist" onclick="toggleWishlist(event, this, '<%= (pkg.name || pkg.package_name || '').replace(/'/g, "\\'") %>')">
+                        <i class="far fa-heart"></i>
+                    </button>
+                    <span class="package-rating"><i class="fas fa-star"></i> <%= Number(pkg.rating || 4.5).toFixed(1) %></span>
+                </div>
+                <div class="package-body">
+                    <div class="package-dest"><i class="fas fa-map-marker-alt"></i> <%= pkg.destination_name || pkg.destination || 'Popular Destination' %></div>
+                    <h3><%= pkg.name || pkg.package_name %></h3>
+                    <p><%= pkg.short_desc || (pkg.description ? pkg.description.substring(0, 100) + '...' : 'Explore this destination with SkyTour.') %></p>
+                    <div class="package-meta">
+                        <span><i class="fas fa-clock"></i> <%= pkg.duration || (pkg.duration_days + 'D / ' + pkg.duration_nights + 'N') %></span>
+                        <span><i class="fas fa-users"></i> Max <%= pkg.max_travelers || 20 %></span>
+                    </div>
+                    <div class="package-footer">
+                        <div class="package-price-wrap">
+                            <span class="price-prefix">Starting from</span>
+                            <div class="price-val-row">
+                                <strong>₹<%= Number(pkg.price || 0).toLocaleString('en-IN') %></strong>
+                                <span class="price-suffix">/ person</span>
+                            </div>
+                        </div>
+                        <div class="package-btn-grid">
+                            <a href="/packages/<%= pkg.id %>" class="btn-card-details">
+                                <i class="fas fa-info-circle"></i> Details
+                            </a>
+                            <a href="/booking?package_id=<%= pkg.id %>" class="btn-card-book">
+                                <i class="fas fa-bolt"></i> Book Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+        <% } %>
+    </div>
+    <div class="section-cta">
+        <a href="/packages" class="btn-secondary">View All Packages <i class="fas fa-arrow-right"></i></a>
+    </div>
+</section>
+
+<!-- WHY CHOOSE US -->
+<section class="why-section">
+    <div class="section-heading">
+        <span>WHY SKYTOUR?</span>
+        <h2>Why Choose Us?</h2>
+        <p>We make travel simple, safe, and spectacular</p>
+    </div>
+    <div class="why-grid">
+        <div class="why-card">
+            <div class="why-icon"><i class="fas fa-tag"></i></div>
+            <h3>Best Price Guarantee</h3>
+            <p>Find a lower price? We'll match it. No hidden fees, transparent pricing on all packages.</p>
+        </div>
+        <div class="why-card">
+            <div class="why-icon"><i class="fas fa-award"></i></div>
+            <h3>Trusted Experts</h3>
+            <p>Over 10 years of experience, 10,000+ happy travelers, and a team of passionate travel experts.</p>
+        </div>
+        <div class="why-card">
+            <div class="why-icon"><i class="fas fa-bolt"></i></div>
+            <h3>Easy Booking</h3>
+            <p>Book your dream trip in minutes with our simple, secure online booking system.</p>
+        </div>
+        <div class="why-card">
+            <div class="why-icon"><i class="fas fa-headset"></i></div>
+            <h3>24/7 Support</h3>
+            <p>Our travel experts are available around the clock to help you before, during, and after your trip.</p>
+        </div>
+        <div class="why-card">
+            <div class="why-icon"><i class="fas fa-shield-alt"></i></div>
+            <h3>Secure & Safe</h3>
+            <p>Your data and payments are secured. We partner only with trusted hotels and operators.</p>
+        </div>
+        <div class="why-card">
+            <div class="why-icon"><i class="fas fa-map-signs"></i></div>
+            <h3>Customized Tours</h3>
+            <p>Can't find what you want? We'll craft a custom itinerary tailored just for you.</p>
+        </div>
+    </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials-section">
+    <div class="section-heading">
+        <span>WHAT TRAVELERS SAY</span>
+        <h2>Customer Reviews</h2>
+        <p>Real experiences from real travelers</p>
+    </div>
+    <div class="testimonials-grid">
+        <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p>"Our Kerala trip was absolutely magical. The houseboat experience on Alleppey backwaters was a dream come true. SkyTour handled everything perfectly!"</p>
+            <div class="reviewer">
+                <div class="reviewer-avatar">P</div>
+                <div><strong>Priya Sharma</strong><span>Mumbai</span></div>
+            </div>
+        </div>
+        <div class="testimonial-card">
+            <div class="stars">★★★★★</div>
+            <p>"Booked the Bali honeymoon package and it exceeded all expectations. The private pool villa, the sunset dinner — absolutely worth every rupee!"</p>
+            <div class="reviewer">
+                <div class="reviewer-avatar">R</div>
+                <div><strong>Rahul & Neha</strong><span>Delhi</span></div>
+            </div>
+        </div>
+        <div class="testimonial-card">
+            <div class="stars">★★★★☆</div>
+            <p>"Took my family to Manali through SkyTour. The kids loved the snow activities, the hotel was amazing, and the whole trip was well-organised. Highly recommended!"</p>
+            <div class="reviewer">
+                <div class="reviewer-avatar">A</div>
+                <div><strong>Amit Patel</strong><span>Ahmedabad</span></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter-section" id="newsletter">
+    <div class="newsletter-content">
+        <div class="newsletter-text">
+            <h2><i class="fas fa-paper-plane"></i> Stay Updated</h2>
+            <p>Subscribe to our newsletter for exclusive deals, travel tips, and destination guides.</p>
+        </div>
+        <form class="newsletter-form" action="/newsletter" method="POST">
+            <input type="email" name="email" placeholder="Enter your email address" required>
+            <button type="submit">Subscribe <i class="fas fa-arrow-right"></i></button>
+        </form>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

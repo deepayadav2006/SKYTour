@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login – SkyTour</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .admin-login-box {
+            background: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            border-radius: 16px;
+            padding: 40px 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+        }
+        .login-brand {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .login-brand h2 {
+            font-size: 26px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        .login-brand h2 span {
+            color: #f97316;
+        }
+        .login-brand p {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+        .admin-tag {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #0284c7;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+        .demo-credentials {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12px;
+            color: #475569;
+            margin-top: 24px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="admin-login-box">
+    <div class="login-brand">
+        <h2>Sky<span>Tour</span></h2>
+        <span class="admin-tag"><i class="fas fa-shield-alt"></i> ADMIN PORTAL</span>
+        <p>Please enter your credentials to access the management panel.</p>
+    </div>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+    <div class="admin-alert admin-alert-error">
+        <i class="fas fa-exclamation-circle"></i> <%= error %>
+    </div>
+    <% } %>
+
+    <form action="/admin/login" method="POST" class="admin-form">
+        <div class="form-group">
+            <label for="email"><i class="fas fa-envelope"></i> Admin Email</label>
+            <input type="email" id="email" name="email" placeholder="admin@skytour.com" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+            <label for="password"><i class="fas fa-lock"></i> Password</label>
+            <input type="password" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="btn-primary w-full btn-lg" style="margin-top: 10px;">
+            <i class="fas fa-sign-in-alt"></i> Access Admin Panel
+        </button>
+    </form>
+
+    <div class="demo-credentials">
+        <strong>Default Admin Login:</strong><br>
+        Email: <code>admin@skytour.com</code> | Password: <code>Admin@123</code>
+    </div>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="/home" style="color: #64748b; font-size: 13px;">← Return to SkyTour Website</a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,121 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<% if (typeof error !== 'undefined' && error) { %>
+<div class="flash-msg flash-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+<% } %>
+
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-icon"><i class="fas fa-user-plus"></i></div>
+                <h2>Create Account</h2>
+                <p>Join SkyTour to book tours and manage your trips</p>
+            </div>
+
+            <form action="/register" method="POST" class="auth-form">
+                <div class="form-group">
+                    <label for="fullName"><i class="fas fa-user"></i> Full Name *</label>
+                    <input type="text" id="fullName" name="fullName" value="<%= typeof formData !== 'undefined' && formData.fullName ? formData.fullName : '' %>" placeholder="John Doe" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email"><i class="fas fa-envelope"></i> Email Address *</label>
+                    <input type="email" id="email" name="email" value="<%= typeof formData !== 'undefined' && formData.email ? formData.email : '' %>" placeholder="you@example.com" required autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone"><i class="fas fa-phone"></i> Phone Number *</label>
+                    <input type="tel" id="phone" name="phone" value="<%= typeof formData !== 'undefined' && formData.phone ? formData.phone : '' %>" placeholder="+91 98765 43210" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password"><i class="fas fa-lock"></i> Password *</label>
+                        <input type="password" id="password" name="password" placeholder="Min. 6 chars" required autocomplete="new-password">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword"><i class="fas fa-check-double"></i> Confirm *</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repeat password" required autocomplete="new-password">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary w-full btn-lg">Create Account</button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Already have an account? <a href="/login">Login here</a></p>
+                <p><a href="/home">← Back to Home</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.auth-section {
+    padding: 60px 24px;
+    min-height: calc(100vh - 75px - 250px);
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
+}
+.auth-card {
+    max-width: 500px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border);
+    padding: 36px 32px;
+}
+.auth-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+.auth-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+}
+.auth-header h2 {
+    font-size: 26px;
+    margin-bottom: 6px;
+}
+.auth-header p {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+.auth-form {
+    display: flex;
+    flex-direction: column;
+}
+.auth-footer {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--text-muted);
+}
+.auth-footer p {
+    margin-bottom: 8px;
+}
+.auth-footer a {
+    color: var(--primary);
+    font-weight: 600;
+}
+.auth-footer a:hover {
+    color: var(--accent);
+}
+</style>
+
+<%- include('partials/footer') %>

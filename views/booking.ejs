@@ -1,0 +1,420 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<% if (success) { %>
+<div class="flash-msg flash-success"><i class="fas fa-check-circle"></i> <%= success %></div>
+<% } %>
+<% if (error) { %>
+<div class="flash-msg flash-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+<% } %>
+
+<section class="page-hero" style="background-image:url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1600&q=80')">
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+        <span class="hero-tag"><i class="fas fa-shield-alt"></i> 100% SECURE & CONFIRMED BOOKING</span>
+        <h1>Complete Your Booking</h1>
+        <p>Confirm your itinerary, select your preferred payment mode, and get ready to fly</p>
+    </div>
+</section>
+
+<section class="page-content">
+    <div class="container">
+        <div class="booking-layout">
+
+            <!-- Booking Form -->
+            <div class="booking-form-wrap">
+                <div class="booking-form-header">
+                    <h2><i class="fas fa-ticket-alt"></i> Trip Reservation</h2>
+                    <span class="secure-badge"><i class="fas fa-lock"></i> 256-bit Encrypted</span>
+                </div>
+
+                <form action="/booking" method="POST" class="booking-form" id="bookingForm">
+
+                    <!-- 1. Package Selection -->
+                    <div class="form-section">
+                        <div class="section-badge">Step 1</div>
+                        <h3>Select Tour Package</h3>
+                        <div class="form-group">
+                            <label><i class="fas fa-box"></i> Package *</label>
+                            <select name="package_id" id="packageSelect" required onchange="updatePrice()">
+                                <option value="">-- Choose a Tour Package --</option>
+                                <% packages.forEach(p => { %>
+                                <option value="<%= p.id %>"
+                                    data-price="<%= p.price %>"
+                                    data-name="<%= p.name %>"
+                                    data-dest="<%= p.destination_name %>"
+                                    data-days="<%= p.duration_days %>"
+                                    data-nights="<%= p.duration_nights || (p.duration_days - 1) %>"
+                                    <%= (formData.package_id == p.id) ? 'selected' : '' %>
+                                ><%= p.destination_name %> – <%= p.name %> (₹<%= Number(p.price).toLocaleString('en-IN') %>/person)</option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 2. Traveler Info -->
+                    <div class="form-section">
+                        <div class="section-badge">Step 2</div>
+                        <h3>Lead Traveler Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-user"></i> Full Name *</label>
+                                <input type="text" name="traveler_name" value="<%= formData.traveler_name||'' %>" required placeholder="John Doe">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-envelope"></i> Email Address *</label>
+                                <input type="email" name="traveler_email" value="<%= formData.traveler_email||'' %>" required placeholder="john@example.com">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-phone"></i> Mobile Phone *</label>
+                                <input type="tel" name="traveler_phone" value="<%= formData.traveler_phone||'' %>" required placeholder="+91 98765 43210">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-users"></i> Number of Travelers *</label>
+                                <div class="traveler-stepper">
+                                    <button type="button" class="step-btn" onclick="adjustTravelers(-1)">−</button>
+                                    <input type="number" name="num_travelers" id="numTravelers" value="1" min="1" max="50" required onchange="updatePrice()">
+                                    <button type="button" class="step-btn" onclick="adjustTravelers(1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Dates & Preferences -->
+                    <div class="form-section">
+                        <div class="section-badge">Step 3</div>
+                        <h3>Travel Schedule</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label><i class="fas fa-calendar"></i> Departure Date *</label>
+                                <input type="date" name="travel_date" id="travelDate" required min="<%= new Date(Date.now()+86400000).toISOString().split('T')[0] %>">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-calendar-check"></i> Estimated Return Date</label>
+                                <input type="date" name="return_date" id="returnDate">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-comment"></i> Special Requests & Preferences</label>
+                            <textarea name="special_requests" rows="2" placeholder="Dietary restrictions, flight timings, room type, anniversary celebration, etc."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 4. Payment Mode -->
+                    <div class="form-section">
+                        <div class="section-badge">Step 4</div>
+                        <h3>Payment Mode</h3>
+                        <p class="section-subtitle">Choose how you'd like to pay for your trip:</p>
+
+                        <div class="payment-methods-grid">
+                            <!-- UPI -->
+                            <label class="pay-card active" onclick="selectPaymentMode('upi')">
+                                <input type="radio" name="payment_mode" value="upi" checked>
+                                <div class="pay-card-header">
+                                    <i class="fas fa-qrcode pay-icon" style="color:#059669"></i>
+                                    <strong>Instant UPI / QR</strong>
+                                </div>
+                                <span>GPay, PhonePe, Paytm, BHIM</span>
+                            </label>
+
+                            <!-- Credit / Debit Card -->
+                            <label class="pay-card" onclick="selectPaymentMode('card')">
+                                <input type="radio" name="payment_mode" value="card">
+                                <div class="pay-card-header">
+                                    <i class="fas fa-credit-card pay-icon" style="color:#2563eb"></i>
+                                    <strong>Debit / Credit Card</strong>
+                                </div>
+                                <span>Visa, MasterCard, RuPay, Amex</span>
+                            </label>
+
+                            <!-- Net Banking -->
+                            <label class="pay-card" onclick="selectPaymentMode('netbanking')">
+                                <input type="radio" name="payment_mode" value="netbanking">
+                                <div class="pay-card-header">
+                                    <i class="fas fa-university pay-icon" style="color:#7c3aed"></i>
+                                    <strong>Net Banking</strong>
+                                </div>
+                                <span>All Major Indian & Global Banks</span>
+                            </label>
+
+                            <!-- Pay on Arrival -->
+                            <label class="pay-card" onclick="selectPaymentMode('cash_on_arrival')">
+                                <input type="radio" name="payment_mode" value="cash_on_arrival">
+                                <div class="pay-card-header">
+                                    <i class="fas fa-hand-holding-usd pay-icon" style="color:#d97706"></i>
+                                    <strong>Pay on Arrival</strong>
+                                </div>
+                                <span>Pay at destination / Hotel check-in</span>
+                            </label>
+                        </div>
+
+                        <!-- Dynamic Payment Details Panel -->
+                        <div class="pay-details-panel" id="upiPanel">
+                            <div class="upi-box">
+                                <div class="qr-mock">
+                                    <i class="fas fa-qrcode fa-5x" style="color:#0f172a"></i>
+                                    <span class="qr-label"><i class="fas fa-camera"></i> Scan with any UPI app</span>
+                                </div>
+                                <div class="upi-inputs">
+                                    <label>Or enter your UPI VPA ID</label>
+                                    <div class="upi-input-group">
+                                        <input type="text" placeholder="username@okhdfcbank" id="upiVpaInput">
+                                        <span class="verified-tag"><i class="fas fa-check"></i> Instant</span>
+                                    </div>
+                                    <small><i class="fas fa-info-circle"></i> Zero transaction fees on UPI payments.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pay-details-panel" id="cardPanel" style="display:none">
+                            <div class="form-row">
+                                <div class="form-group" style="flex:2">
+                                    <label>Card Number</label>
+                                    <input type="text" placeholder="4532 •••• •••• 8892" maxlength="19" id="cardNumInput" onkeyup="formatCardNumber(this)">
+                                </div>
+                                <div class="form-group">
+                                    <label>Expiry (MM/YY)</label>
+                                    <input type="text" placeholder="12/28" maxlength="5">
+                                </div>
+                                <div class="form-group">
+                                    <label>CVV</label>
+                                    <input type="password" placeholder="•••" maxlength="4">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Name on Card</label>
+                                <input type="text" placeholder="Name as displayed on card">
+                            </div>
+                        </div>
+
+                        <div class="pay-details-panel" id="netbankingPanel" style="display:none">
+                            <div class="form-group">
+                                <label>Select Bank</label>
+                                <select class="bank-select">
+                                    <option value="HDFC">HDFC Bank</option>
+                                    <option value="SBI">State Bank of India</option>
+                                    <option value="ICICI">ICICI Bank</option>
+                                    <option value="AXIS">Axis Bank</option>
+                                    <option value="KOTAK">Kotak Mahindra Bank</option>
+                                    <option value="PNB">Punjab National Bank</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="pay-details-panel" id="arrivalPanel" style="display:none">
+                            <div class="arrival-note">
+                                <i class="fas fa-calendar-check fa-2x" style="color:#d97706"></i>
+                                <div>
+                                    <strong>No upfront payment required!</strong>
+                                    <p>Your seats will be reserved immediately. You can pay via cash, card, or UPI when you arrive at your hotel or meet your tour coordinator.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Price Breakdown Summary -->
+                    <div class="price-summary-card" id="priceSummary">
+                        <h4><i class="fas fa-receipt"></i> Payment & Order Breakdown</h4>
+                        <div class="summary-line">
+                            <span>Package Fare:</span>
+                            <strong id="basePrice">Select a package</strong>
+                        </div>
+                        <div class="summary-line">
+                            <span>Travelers:</span>
+                            <span id="travelerDisplay">-</span>
+                        </div>
+                        <div class="summary-line">
+                            <span>GST & Travel Taxes (5%):</span>
+                            <span id="taxDisplay">-</span>
+                        </div>
+                        <div class="summary-line discount-line" id="discountLine" style="display:none">
+                            <span style="color:#10b981"><i class="fas fa-tag"></i> Promo Discount (10%):</span>
+                            <strong style="color:#10b981" id="discountDisplay">-₹0</strong>
+                        </div>
+
+                        <!-- Promo Code input -->
+                        <div class="promo-box">
+                            <input type="text" id="promoInput" placeholder="Promo code (try: SKYTOUR10)">
+                            <button type="button" class="btn-promo" onclick="applyPromo()">Apply</button>
+                        </div>
+                        <div id="promoMsg" class="promo-msg"></div>
+
+                        <hr class="summary-divider">
+
+                        <div class="summary-total">
+                            <span>Total Payable:</span>
+                            <span class="total-big" id="grandTotal">-</span>
+                        </div>
+
+                        <button type="submit" class="btn-book-submit btn-lg w-full" id="submitBtn">
+                            <i class="fas fa-lock"></i> Pay & Confirm Booking
+                        </button>
+
+                        <div class="trust-strip">
+                            <span><i class="fas fa-shield-alt"></i> SSL Secured</span>
+                            <span><i class="fas fa-undo"></i> Free Cancellation</span>
+                            <span><i class="fas fa-headset"></i> 24/7 Support</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Booking Info Sidebar -->
+            <div class="booking-sidebar">
+                <% if (pkg) { %>
+                <div class="selected-pkg-card">
+                    <img src="<%= pkg.image_url %>" alt="<%= pkg.name %>">
+                    <div class="selected-pkg-info">
+                        <span class="pkg-category-tag"><%= pkg.destination_name %></span>
+                        <h4><%= pkg.name %></h4>
+                        <p class="pkg-info-meta"><i class="fas fa-clock"></i> <%= pkg.duration_days %> Days / <%= pkg.duration_nights %> Nights</p>
+                        <p class="pkg-info-meta"><i class="fas fa-star" style="color:#f59e0b"></i> <%= pkg.rating %> / 5 Rating</p>
+                        <div class="pkg-price-tag">₹<%= Number(pkg.price).toLocaleString('en-IN') %> <small>/ person</small></div>
+                    </div>
+                </div>
+                <% } %>
+
+                <div class="booking-perks-card">
+                    <h4><i class="fas fa-award"></i> The SkyTour Guarantee</h4>
+                    <ul class="perks-list">
+                        <li><i class="fas fa-check-circle"></i> <strong>Instant Confirmation:</strong> Voucher delivered right after booking.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Best Price Promise:</strong> 100% transparent pricing without hidden fees.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Flexible Rescheduling:</strong> Free cancellation up to 48 hours prior.</li>
+                        <li><i class="fas fa-check-circle"></i> <strong>Expert Travel Support:</strong> Dedicated personal coordinator for your trip.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<script>
+const packagePrices = {};
+document.querySelectorAll('#packageSelect option').forEach(opt => {
+    if (opt.value) packagePrices[opt.value] = parseFloat(opt.dataset.price);
+});
+
+let promoDiscount = 0;
+let currentMode = 'upi';
+
+function selectPaymentMode(mode) {
+    currentMode = mode;
+    document.querySelectorAll('.pay-card').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.pay-details-panel').forEach(p => p.style.display = 'none');
+
+    const selectedRadio = document.querySelector(`input[name="payment_mode"][value="${mode}"]`);
+    if (selectedRadio) {
+        selectedRadio.checked = true;
+        selectedRadio.closest('.pay-card').classList.add('active');
+    }
+
+    if (mode === 'upi') document.getElementById('upiPanel').style.display = 'block';
+    else if (mode === 'card') document.getElementById('cardPanel').style.display = 'block';
+    else if (mode === 'netbanking') document.getElementById('netbankingPanel').style.display = 'block';
+    else if (mode === 'cash_on_arrival') document.getElementById('arrivalPanel').style.display = 'block';
+
+    updateSubmitButton();
+}
+
+function adjustTravelers(delta) {
+    const input = document.getElementById('numTravelers');
+    let val = (parseInt(input.value) || 1) + delta;
+    if (val < 1) val = 1;
+    if (val > 50) val = 50;
+    input.value = val;
+    updatePrice();
+}
+
+function applyPromo() {
+    const code = document.getElementById('promoInput').value.trim().toUpperCase();
+    const msg = document.getElementById('promoMsg');
+    if (code === 'SKYTOUR10') {
+        promoDiscount = 0.10;
+        msg.innerHTML = '<span style="color:#10b981"><i class="fas fa-check"></i> 10% discount coupon applied!</span>';
+        document.getElementById('discountLine').style.display = 'flex';
+    } else if (code === '') {
+        promoDiscount = 0;
+        msg.textContent = '';
+        document.getElementById('discountLine').style.display = 'none';
+    } else {
+        promoDiscount = 0;
+        msg.innerHTML = '<span style="color:#ef4444"><i class="fas fa-times"></i> Invalid coupon code. Try SKYTOUR10</span>';
+        document.getElementById('discountLine').style.display = 'none';
+    }
+    updatePrice();
+}
+
+function formatCardNumber(el) {
+    let v = el.value.replace(/\D+/g, '');
+    let formatted = '';
+    for (let i = 0; i < v.length; i++) {
+        if (i > 0 && i % 4 === 0) formatted += ' ';
+        formatted += v[i];
+    }
+    el.value = formatted;
+}
+
+function updatePrice() {
+    const pkgId = document.getElementById('packageSelect').value;
+    const travelers = parseInt(document.getElementById('numTravelers').value) || 1;
+
+    if (!pkgId) {
+        document.getElementById('basePrice').textContent = 'Select a package';
+        document.getElementById('travelerDisplay').textContent = '-';
+        document.getElementById('taxDisplay').textContent = '-';
+        document.getElementById('grandTotal').textContent = '-';
+        updateSubmitButton();
+        return;
+    }
+
+    const price = packagePrices[pkgId];
+    const baseTotal = price * travelers;
+    const taxes = Math.round(baseTotal * 0.05);
+    const subtotal = baseTotal + taxes;
+    const discountAmt = Math.round(subtotal * promoDiscount);
+    const finalTotal = subtotal - discountAmt;
+
+    document.getElementById('basePrice').textContent = '₹' + price.toLocaleString('en-IN') + ' / person';
+    document.getElementById('travelerDisplay').textContent = travelers + (travelers > 1 ? ' Travelers' : ' Traveler') + ' (₹' + baseTotal.toLocaleString('en-IN') + ')';
+    document.getElementById('taxDisplay').textContent = '₹' + taxes.toLocaleString('en-IN');
+    if (promoDiscount > 0) {
+        document.getElementById('discountDisplay').textContent = '-₹' + discountAmt.toLocaleString('en-IN');
+    }
+    document.getElementById('grandTotal').textContent = '₹' + finalTotal.toLocaleString('en-IN');
+
+    updateSubmitButton(finalTotal);
+}
+
+function updateSubmitButton(total) {
+    const btn = document.getElementById('submitBtn');
+    if (currentMode === 'cash_on_arrival') {
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Booking (Pay on Arrival)';
+    } else {
+        const amtStr = total ? ' ₹' + total.toLocaleString('en-IN') : '';
+        btn.innerHTML = `<i class="fas fa-lock"></i> Pay${amtStr} & Confirm Booking`;
+    }
+}
+
+// Auto-advance return date
+document.getElementById('travelDate').addEventListener('change', function() {
+    const nextDay = new Date(new Date(this.value).getTime() + 86400000).toISOString().split('T')[0];
+    document.getElementById('returnDate').min = nextDay;
+    if (!document.getElementById('returnDate').value) {
+        // Auto pick default days
+        const pkgOpt = document.querySelector('#packageSelect option:checked');
+        const days = parseInt(pkgOpt ? pkgOpt.dataset.days : 4) || 4;
+        const autoReturn = new Date(new Date(this.value).getTime() + 86400000 * days).toISOString().split('T')[0];
+        document.getElementById('returnDate').value = autoReturn;
+    }
+});
+
+// Initialize on page load
+if (document.getElementById('packageSelect').value) {
+    updatePrice();
+}
+</script>
+
+<%- include('partials/footer') %>

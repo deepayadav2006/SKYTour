@@ -1,0 +1,171 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<% if (success) { %>
+<div class="flash-msg flash-success"><i class="fas fa-check-circle"></i> <%= success %></div>
+<% } %>
+<% if (error) { %>
+<div class="flash-msg flash-error"><i class="fas fa-exclamation-circle"></i> <%= error %></div>
+<% } %>
+
+<section class="confirmation-section">
+    <div class="container">
+        <div class="confirmation-card" id="printableVoucher">
+
+            <div class="confirmation-header no-print">
+                <div class="confirmation-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h1>Booking Confirmed!</h1>
+                <p class="conf-subtitle">Pack your bags! Your itinerary with SkyTour has been successfully reserved.</p>
+            </div>
+
+            <!-- Official Ticket Voucher Header -->
+            <div class="voucher-ticket-header">
+                <div class="voucher-brand">
+                    <h2>Sky<span>Tour</span></h2>
+                    <span>Official E-Ticket & Travel Itinerary</span>
+                </div>
+                <div class="voucher-ref-badge">
+                    <small>BOOKING REFERENCE</small>
+                    <strong id="refText"><%= booking.booking_ref %></strong>
+                </div>
+            </div>
+
+            <div class="booking-summary-grid">
+                <div class="sum-row">
+                    <span><i class="fas fa-box"></i> Package</span>
+                    <strong><%= booking.package_name %></strong>
+                </div>
+                <div class="sum-row">
+                    <span><i class="fas fa-map-marker-alt"></i> Destination</span>
+                    <strong><%= booking.destination_name %><%= booking.country ? ', ' + booking.country : '' %></strong>
+                </div>
+                <div class="sum-row">
+                    <span><i class="fas fa-user"></i> Primary Traveler</span>
+                    <strong><%= booking.traveler_name %></strong>
+                </div>
+                <div class="sum-row">
+                    <span><i class="fas fa-phone"></i> Contact Phone</span>
+                    <strong><%= booking.traveler_phone %></strong>
+                </div>
+                <div class="sum-row">
+                    <span><i class="fas fa-calendar"></i> Departure Date</span>
+                    <strong><%= new Date(booking.travel_date).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'}) %></strong>
+                </div>
+                <% if (booking.return_date) { %>
+                <div class="sum-row">
+                    <span><i class="fas fa-calendar-check"></i> Return Date</span>
+                    <strong><%= new Date(booking.return_date).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'}) %></strong>
+                </div>
+                <% } %>
+                <div class="sum-row">
+                    <span><i class="fas fa-users"></i> Travelers</span>
+                    <strong><%= booking.num_travelers %> Person(s)</strong>
+                </div>
+                <div class="sum-row">
+                    <span><i class="fas fa-clock"></i> Duration</span>
+                    <strong><%= booking.duration_days %> Days / <%= booking.duration_nights || (booking.duration_days - 1) %> Nights</strong>
+                </div>
+                <div class="sum-row">
+                    <span><i class="fas fa-wallet"></i> Payment Mode</span>
+                    <strong style="text-transform: capitalize;"><%= (booking.payment_mode || 'Card').replace('_', ' ') %></strong>
+                </div>
+                <div class="sum-row">
+                    <span><i class="fas fa-info-circle"></i> Payment Status</span>
+                    <% if (booking.payment_status === 'paid') { %>
+                        <span class="status-badge status-paid"><i class="fas fa-check-circle"></i> Paid Online</span>
+                    <% } else { %>
+                        <span class="status-badge status-pending"><i class="fas fa-clock"></i> Pay on Arrival / Pending</span>
+                    <% } %>
+                </div>
+                <% if (booking.transaction_id) { %>
+                <div class="sum-row">
+                    <span><i class="fas fa-receipt"></i> Transaction ID</span>
+                    <strong class="txn-code"><%= booking.transaction_id %></strong>
+                </div>
+                <% } %>
+                <div class="sum-row total-row">
+                    <span><i class="fas fa-rupee-sign"></i> Total Amount</span>
+                    <strong class="total-price-text">₹<%= Number(booking.total_price).toLocaleString('en-IN') %></strong>
+                </div>
+            </div>
+
+            <!-- Pay Now Box for Pending Bookings -->
+            <% if (booking.payment_status !== 'paid') { %>
+            <div class="pay-now-banner no-print">
+                <div class="pnb-info">
+                    <i class="fas fa-credit-card fa-2x" style="color:#2563eb"></i>
+                    <div>
+                        <strong>Prefer to pay online now?</strong>
+                        <p>Complete your payment instantly via UPI, Card, or Net Banking to unlock VIP express check-in.</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-primary" onclick="document.getElementById('payModal').style.display='flex'">
+                    <i class="fas fa-bolt"></i> Pay ₹<%= Number(booking.total_price).toLocaleString('en-IN') %> Now
+                </button>
+            </div>
+            <% } %>
+
+            <!-- Barcode & Travel Advice Footer -->
+            <div class="voucher-ticket-footer">
+                <div class="voucher-guidelines">
+                    <h4>Important Traveler Information:</h4>
+                    <ul>
+                        <li>Please carry a valid government-issued photo ID (Aadhaar, Passport, or Voter ID).</li>
+                        <li>Hotel check-in is typically at 12:00 PM; check-out is at 10:00 AM.</li>
+                        <li>Our 24/7 destination concierge is reachable at <strong>+91 98765 43210</strong>.</li>
+                    </ul>
+                </div>
+                <div class="barcode-wrap">
+                    <div class="barcode-lines"></div>
+                    <small><%= booking.booking_ref %></small>
+                </div>
+            </div>
+
+            <div class="conf-actions no-print">
+                <button type="button" onclick="window.print()" class="btn-print">
+                    <i class="fas fa-print"></i> Print Travel Voucher / Save PDF
+                </button>
+                <a href="/dashboard/bookings" class="btn-primary">
+                    <i class="fas fa-ticket-alt"></i> View My Bookings
+                </a>
+                <a href="/packages" class="btn-secondary">
+                    <i class="fas fa-compass"></i> Explore More Trips
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Pay Modal for Pending Bookings -->
+<% if (booking.payment_status !== 'paid') { %>
+<div class="modal-backdrop" id="payModal" style="display:none">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3><i class="fas fa-lock"></i> Complete Payment</h3>
+            <button type="button" class="modal-close" onclick="document.getElementById('payModal').style.display='none'">×</button>
+        </div>
+        <form action="/booking/pay/<%= booking.booking_ref %>" method="POST" class="modal-body">
+            <p>Booking Reference: <strong><%= booking.booking_ref %></strong></p>
+            <p>Total Payable: <strong style="font-size:18px; color:var(--primary)">₹<%= Number(booking.total_price).toLocaleString('en-IN') %></strong></p>
+
+            <div class="form-group" style="margin-top:16px;">
+                <label>Select Payment Mode</label>
+                <select name="payment_mode" class="form-control" required>
+                    <option value="upi">Instant UPI / QR Code (GPay, PhonePe, Paytm)</option>
+                    <option value="card">Credit / Debit Card (Visa, MasterCard, RuPay)</option>
+                    <option value="netbanking">Net Banking (All Major Banks)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-primary w-full btn-lg" style="margin-top:16px;">
+                <i class="fas fa-check-circle"></i> Confirm Payment & Download Ticket
+            </button>
+        </form>
+    </div>
+</div>
+<% } %>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,89 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<section class="page-hero dest-hero" style="background-image: url('<%= destination.image_url %>')">
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+        <div class="breadcrumb">
+            <a href="/home"><i class="fas fa-home"></i> Home</a>
+            <span class="bc-sep">/</span>
+            <a href="/destinations">Destinations</a>
+            <span class="bc-sep">/</span>
+            <span><%= destination.name %></span>
+        </div>
+        <span class="hero-tag"><i class="fas fa-map-marker-alt"></i> DESTINATION SPOTLIGHT</span>
+        <h1><%= destination.name %></h1>
+        <p class="dest-country-badge"><i class="fas fa-globe-americas"></i> <%= destination.country %></p>
+    </div>
+</section>
+
+<section class="dest-detail-section">
+    <div class="container">
+        <div class="dest-detail-layout">
+            <!-- Main Content -->
+            <div class="dest-main">
+                <h2>About <%= destination.name %></h2>
+                <p class="dest-long-desc"><%= destination.description %></p>
+
+                <h3>Available Packages in <%= destination.name %></h3>
+                <% if (packages.length === 0) { %>
+                <div class="empty-state">
+                    <i class="fas fa-box-open"></i>
+                    <p>No packages available for this destination currently.</p>
+                    <a href="/packages" class="btn-primary" style="margin-top:12px;">Browse All Packages</a>
+                </div>
+                <% } else { %>
+                <div class="dest-packages-list">
+                    <% packages.forEach(pkg => { %>
+                    <div class="dest-pkg-card">
+                        <div class="dest-pkg-img-wrap">
+                            <img src="<%= pkg.image_url %>"
+                                 alt="<%= pkg.name %>"
+                                 loading="lazy"
+                                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80';">
+                            <span class="package-badge badge-<%= (pkg.category || 'adventure').toLowerCase() %>">
+                                <%= (pkg.category || 'adventure').charAt(0).toUpperCase() + (pkg.category || 'adventure').slice(1) %>
+                            </span>
+                        </div>
+                        <div class="dest-pkg-info">
+                            <h4><%= pkg.name %></h4>
+                            <p><%= pkg.short_desc %></p>
+                            <div class="dest-pkg-meta">
+                                <span><i class="fas fa-clock"></i> <%= pkg.duration || (pkg.duration_days + ' Days / ' + (pkg.duration_nights || (pkg.duration_days - 1)) + ' Nights') %></span>
+                                <span class="dest-pkg-rating"><i class="fas fa-star" style="color: #f59e0b;"></i> <%= Number(pkg.rating || 4.5).toFixed(1) %></span>
+                                <div class="dest-pkg-price">
+                                    <small>From</small>
+                                    <strong>₹<%= Number(pkg.price).toLocaleString('en-IN') %></strong>
+                                    <small>/ person</small>
+                                </div>
+                            </div>
+                            <div class="dest-pkg-actions">
+                                <a href="/packages/<%= pkg.id %>" class="btn-details"><i class="fas fa-info-circle"></i> View Details</a>
+                                <a href="/booking?package_id=<%= pkg.id %>" class="btn-book"><i class="fas fa-calendar-check"></i> Book Now</a>
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+                </div>
+                <% } %>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="dest-sidebar">
+                <div class="dest-info-card">
+                    <h4><i class="fas fa-info-circle"></i> Travel Info</h4>
+                    <ul class="dest-info-list">
+                        <li><i class="fas fa-sun"></i><div><strong>Best Time</strong><span><%= destination.best_time %></span></div></li>
+                        <li><i class="fas fa-cloud-sun"></i><div><strong>Climate</strong><span><%= destination.climate %></span></div></li>
+                        <li><i class="fas fa-language"></i><div><strong>Language</strong><span><%= destination.language %></span></div></li>
+                        <li><i class="fas fa-coins"></i><div><strong>Currency</strong><span><%= destination.currency %></span></div></li>
+                    </ul>
+                </div>
+                <a href="/packages?destination=<%= encodeURIComponent(destination.name) %>" class="btn-primary w-full" style="text-align:center;display:block;margin-top:15px;"><i class="fas fa-th-large"></i> View All <%= destination.name %> Packages</a>
+                <a href="/contact" class="btn-secondary w-full" style="text-align:center;display:block;margin-top:10px;"><i class="fas fa-envelope"></i> Contact Us</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

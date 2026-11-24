@@ -1,0 +1,143 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<section class="page-hero" style="background-image:url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1600&q=80')">
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+        <h1>About SkyTour</h1>
+        <p>Discover our story, our passion for travel, and our commitment to you</p>
+    </div>
+</section>
+
+<section class="page-content">
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-text">
+                <span class="about-tag">WHO WE ARE</span>
+                <h2>Creating Unforgettable Travel Experiences Since 2016</h2>
+                <p>Welcome to <strong>SkyTour</strong> – your premier gateway to discovering the world's most captivating destinations. Founded with a vision to make world travel accessible, seamless, and deeply memorable, we have grown from a boutique agency into a trusted global travel community.</p>
+                <p>Our team of passionate globe-trotters and local destination specialists work hand-in-hand to craft authentic itineraries that balance iconic landmarks with hidden gems. Whether you seek the serene backwaters of Kerala, the alpine heights of Manali, or the futuristic marvels of Singapore, we are here to make your journey extraordinary.</p>
+                <div class="about-features">
+                    <div class="af-item"><i class="fas fa-check-circle"></i> Handcrafted itineraries</div>
+                    <div class="af-item"><i class="fas fa-check-circle"></i> 100% transparent pricing</div>
+                    <div class="af-item"><i class="fas fa-check-circle"></i> 24/7 on-trip assistance</div>
+                    <div class="af-item"><i class="fas fa-check-circle"></i> Verified luxury & boutique stays</div>
+                </div>
+            </div>
+            <div class="about-img">
+                <img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&q=80" alt="Travelers exploring" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-xl);">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission & Vision -->
+<section class="mission-section">
+    <div class="container">
+        <div class="mission-grid">
+            <div class="mission-card">
+                <div class="mission-icon"><i class="fas fa-compass"></i></div>
+                <h3>Our Mission</h3>
+                <p>To deliver enriching and worry-free travel adventures that connect people with new cultures, breathtaking landscapes, and unforgettable memories.</p>
+            </div>
+            <div class="mission-card">
+                <div class="mission-icon"><i class="fas fa-eye"></i></div>
+                <h3>Our Vision</h3>
+                <p>To become the world's most trusted, innovative, and customer-obsessed travel platform, inspiring millions to explore our planet responsibly.</p>
+            </div>
+            <div class="mission-card">
+                <div class="mission-icon"><i class="fas fa-heart"></i></div>
+                <h3>Our Values</h3>
+                <p>Integrity, safety, cultural respect, sustainability, and an relentless dedication to exceeding our travelers' expectations.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+    margin-bottom: 60px;
+}
+.about-tag {
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    display: block;
+    margin-bottom: 8px;
+}
+.about-text h2 {
+    font-size: 32px;
+    margin-bottom: 18px;
+}
+.about-text p {
+    font-size: 15px;
+    color: var(--navy-muted);
+    line-height: 1.8;
+    margin-bottom: 16px;
+}
+.about-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 24px;
+}
+.af-item {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.af-item i {
+    color: var(--success);
+}
+.mission-section {
+    padding: 70px 0;
+    background: #fff;
+    border-top: 1px solid var(--border);
+}
+.mission-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+}
+.mission-card {
+    background: var(--bg-light);
+    padding: 32px 24px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    text-align: center;
+}
+.mission-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+.mission-card h3 {
+    margin-bottom: 10px;
+}
+.mission-card p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+@media (max-width: 768px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .mission-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+<%- include('partials/footer') %>

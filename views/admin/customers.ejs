@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Management – SkyTour Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+<div class="admin-wrapper">
+    <%- include('sidebar', { activePage: 'customers' }) %>
+
+    <div class="admin-main">
+        <%- include('topbar', { pageTitle: 'Customer Accounts' }) %>
+
+        <div class="admin-content">
+            <div class="admin-card">
+                <form method="GET" action="/admin/customers" class="admin-filter-bar">
+                    <input type="text" name="search" value="<%= search || '' %>" placeholder="Search customer by name, email, or phone..." style="min-width: 320px;">
+                    <button type="submit" class="btn-primary" style="padding: 10px 18px;"><i class="fas fa-search"></i> Search</button>
+                    <% if (search) { %>
+                    <a href="/admin/customers" class="btn-secondary" style="padding: 10px 14px;">Reset</a>
+                    <% } %>
+                </form>
+
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Total Bookings</th>
+                                <th>Joined On</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (customers.length === 0) { %>
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 40px; color: var(--admin-muted);">
+                                    No customer accounts found.
+                                </td>
+                            </tr>
+                            <% } %>
+                            <% customers.forEach((c, index) => { %>
+                            <tr>
+                                <td><%= index + 1 %></td>
+                                <td><strong><%= c.full_name %></strong></td>
+                                <td><%= c.email %></td>
+                                <td><%= c.phone || 'N/A' %></td>
+                                <td>
+                                    <span class="badge-status badge-confirmed"><%= c.total_bookings %> booking(s)</span>
+                                </td>
+                                <td><%= new Date(c.created_at).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'}) %></td>
+                                <td>
+                                    <a href="/admin/customers/<%= c.id %>" class="btn-action btn-view"><i class="fas fa-eye"></i> View History</a>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

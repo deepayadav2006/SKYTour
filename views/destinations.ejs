@@ -1,0 +1,51 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+
+<section class="page-hero" style="background-image: url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1600&q=80')">
+    <div class="page-hero-overlay"></div>
+    <div class="page-hero-content">
+        <h1>Explore Destinations</h1>
+        <p>Discover the world's most beautiful places</p>
+    </div>
+</section>
+
+<section class="page-content">
+    <div class="container">
+        <!-- Search -->
+        <form class="dest-search-bar" method="GET" action="/destinations">
+            <input type="text" name="search" value="<%= search %>" placeholder="Search destinations...">
+            <button type="submit"><i class="fas fa-search"></i> Search</button>
+            <% if (search) { %><a href="/destinations" class="clear-btn">Clear</a><% } %>
+        </form>
+
+        <% if (destinations.length === 0) { %>
+        <div class="empty-state">
+            <i class="fas fa-map"></i>
+            <h3>No destinations found</h3>
+            <p>Try a different search term.</p>
+            <a href="/destinations" class="btn-primary">View All</a>
+        </div>
+        <% } else { %>
+        <div class="destinations-page-grid">
+            <% destinations.forEach(dest => { %>
+            <div class="dest-page-card">
+                <a href="/destinations/<%= dest.id %>">
+                    <img src="<%= dest.image_url %>" alt="<%= dest.name %>" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80';">
+                    <div class="dest-page-info">
+                        <div class="dest-country"><i class="fas fa-globe"></i> <%= dest.country %></div>
+                        <h3><%= dest.name %></h3>
+                        <p><%= dest.short_desc %></p>
+                        <div class="dest-meta">
+                            <span><i class="fas fa-sun"></i> <%= dest.best_time %></span>
+                            <span class="dest-cta">Explore <i class="fas fa-arrow-right"></i></span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <% }) %>
+        </div>
+        <% } %>
+    </div>
+</section>
+
+<%- include('partials/footer') %>

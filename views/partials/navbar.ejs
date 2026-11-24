@@ -1,0 +1,48 @@
+<header class="navbar" id="navbar">
+    <div class="nav-container">
+        <a href="/home" class="logo">
+            <div class="logo-icon-wrap"><i class="fas fa-plane-departure"></i></div>
+            Sky<span>Tour</span>
+        </a>
+
+        <nav class="nav-menu" id="navMenu">
+            <ul class="nav-links">
+                <li><a href="/home" class="<%= (typeof currentPath !== 'undefined' && (currentPath === '/' || currentPath === '/home')) ? 'active' : '' %>">Home</a></li>
+                <li><a href="/destinations" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/destinations')) ? 'active' : '' %>">Destinations</a></li>
+                <li><a href="/packages" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/packages')) ? 'active' : '' %>">Packages</a></li>
+                <li><a href="/about" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/about')) ? 'active' : '' %>">About Us</a></li>
+                <li><a href="/contact" class="<%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/contact')) ? 'active' : '' %>">Contact</a></li>
+            </ul>
+        </nav>
+
+        <div class="nav-actions">
+            <% if (user) { %>
+                <div class="user-dropdown">
+                    <button class="user-btn" aria-haspopup="true" aria-expanded="false">
+                        <div class="user-avatar"><%= (user.full_name || user.name || 'U').charAt(0).toUpperCase() %></div>
+                        <span><%= (user.full_name || user.name || 'User').split(' ')[0] %></span>
+                        <i class="fas fa-chevron-down nav-chevron"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-user-header">
+                            <strong><%= user.full_name || user.name %></strong>
+                            <small><%= user.email %></small>
+                        </div>
+                        <hr>
+                        <a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                        <a href="/dashboard/bookings"><i class="fas fa-ticket-alt"></i> My Bookings</a>
+                        <a href="/dashboard/profile"><i class="fas fa-user-edit"></i> Profile</a>
+                        <hr>
+                        <a href="/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            <% } else { %>
+                <a href="/login" class="btn-outline">Login</a>
+                <a href="/register" class="btn-primary">Sign Up</a>
+            <% } %>
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </div>
+</header>
