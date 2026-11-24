@@ -1,4 +1,15 @@
+const app = require('./app');
+
 (async function run() {
+    let server;
+    try {
+        await fetch('http://localhost:3000/home');
+    } catch (_) {
+        server = await new Promise(resolve => {
+            const s = app.listen(3000, () => resolve(s));
+        });
+    }
+
     console.log('\n========================================');
     console.log('   STARTING SKYTOUR ROUTE VERIFICATION  ');
     console.log('========================================\n');
@@ -137,5 +148,9 @@
     console.log(`\n================================`);
     console.log(`SUMMARY: ${passed} PASSED, ${failed} FAILED`);
     console.log(`================================\n`);
-    if (failed > 0) process.exit(1);
+    if (server) {
+        if (server.closeAllConnections) server.closeAllConnections();
+        await new Promise(resolve => server.close(resolve));
+    }
+    process.exit(failed > 0 ? 1 : 0);
 })();

@@ -95,17 +95,21 @@ app.use((err, req, res, next) => {
 });
 
 // ─── Start Server & Run Seeder ──────────────────────────────
-app.listen(PORT, async () => {
-    console.log(`\n=================================================`);
-    console.log(`🚀 SkyTour server running at: http://localhost:${PORT}`);
-    console.log(`👤 Admin dashboard:           http://localhost:${PORT}/admin`);
-    console.log(`📧 Default Admin Account:     admin@skytour.com / Admin@123`);
-    console.log(`=================================================\n`);
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
+    app.listen(PORT, async () => {
+        console.log(`\n=================================================`);
+        console.log(`🚀 SkyTour server running at: http://localhost:${PORT}`);
+        console.log(`👤 Admin dashboard:           http://localhost:${PORT}/admin`);
+        console.log(`📧 Default Admin Account:     admin@skytour.com / Admin@123`);
+        console.log(`=================================================\n`);
 
-    // Run database seeder safely in background
-    try {
-        await seedDatabase(db);
-    } catch (seederErr) {
-        console.warn('⚠️ Seeder notice:', seederErr.message);
-    }
-});
+        // Run database seeder safely in background
+        try {
+            await seedDatabase(db);
+        } catch (seederErr) {
+            console.warn('⚠️ Seeder notice:', seederErr.message);
+        }
+    });
+}
+
+module.exports = app;

@@ -1,4 +1,6 @@
 const path = require('path');
+const fs = require('fs');
+const os = require('os');
 const mysql = require('mysql2');
 require('dotenv').config();
 
@@ -6,12 +8,48 @@ let activeEngine = null; // 'mysql' | 'sqlite'
 let mysqlPool = null;
 let sqliteDb = null;
 
+// Determine writable SQLite file path (supports Vercel, AWS Lambda, serverless environments)
+function getSQLitePath() {
+    if (process.env.SQLITE_PATH) return process.env.SQLITE_PATH;
+
+    const sourcePath = path.join(__dirname, '..', 'skytour.sqlite');
+
+    // On serverless platforms (Vercel, AWS Lambda, Netlify), the project root is strictly read-only.
+    // The only writable directory is os.tmpdir() (/tmp).
+    const isServerless = Boolean(
+        process.env.VERCEL ||
+        process.env.AWS_LAMBDA_FUNCTION_NAME ||
+        process.env.LAMBDA_TASK_ROOT ||
+        process.env.NETLIFY
+    );
+
+    if (isServerless) {
+        const tmpPath = path.join(os.tmpdir(), 'skytour.sqlite');
+        try {
+            if (!fs.existsSync(tmpPath)) {
+                if (fs.existsSync(sourcePath)) {
+                    fs.copyFileSync(sourcePath, tmpPath);
+                    console.log('📦 Copied pre-seeded SQLite database to writable serverless storage:', tmpPath);
+                }
+            }
+            try {
+                fs.chmodSync(tmpPath, 0o666);
+            } catch (_) {}
+            return tmpPath;
+        } catch (e) {
+            console.warn('⚠️ Could not copy sqlite database to tmpdir:', e.message);
+        }
+    }
+
+    return sourcePath;
+}
+
 // Initialize SQLite database
 function initSQLite() {
     if (sqliteDb) return sqliteDb;
 
     const { DatabaseSync } = require('node:sqlite');
-    const dbPath = path.join(__dirname, '..', 'skytour.sqlite');
+    const dbPath = getSQLitePath();
     sqliteDb = new DatabaseSync(dbPath);
 
     // Register MySQL-compatible scalar functions in SQLite
@@ -150,21 +188,31 @@ function initSQLite() {
 }
 
 // Attempt MySQL connection setup
+const isCloudHost = Boolean(process.env.DB_HOST && process.env.DB_HOST !== 'localhost' && process.env.DB_HOST !== '127.0.0.1');
+
 try {
-    mysqlPool = mysql.createPool({
+    const poolConfig = {
         host: process.env.DB_HOST || 'localhost',
+        port: Number(process.env.DB_PORT) || 3306,
         user: process.env.DB_USER || 'root',
         password: process.env.DB_PASSWORD || '',
         database: process.env.DB_NAME || 'skytour',
-        connectTimeout: 1000,
+        connectTimeout: isCloudHost ? 10000 : 1500,
         waitForConnections: true,
         connectionLimit: 10,
         queueLimit: 0
-    });
+    };
+
+    // Enable SSL if explicitly configured or when connecting to cloud MySQL
+    if (process.env.DB_SSL === 'true' || isCloudHost) {
+        poolConfig.ssl = { rejectUnauthorized: false };
+    }
+
+    mysqlPool = mysql.createPool(poolConfig);
 
     mysqlPool.getConnection((err, connection) => {
         if (err) {
-            console.log('ℹ️ MySQL not connected (' + err.code + '). Using embedded persistent SQLite storage (skytour.sqlite).');
+            console.log('ℹ️ MySQL not connected (' + (err.code || err.message) + '). Using embedded persistent SQLite storage (skytour.sqlite).');
             initSQLite();
         } else {
             activeEngine = 'mysql';
