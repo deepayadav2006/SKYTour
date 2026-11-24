@@ -12,7 +12,10 @@ let sqliteDb = null;
 function getSQLitePath() {
     if (process.env.SQLITE_PATH) return process.env.SQLITE_PATH;
 
-    const sourcePath = path.join(__dirname, '..', 'skytour.sqlite');
+    let sourcePath = path.join(__dirname, '..', 'skytour.sqlite');
+    if (!fs.existsSync(sourcePath)) {
+        sourcePath = path.join(process.cwd(), 'skytour.sqlite');
+    }
 
     // On serverless platforms (Vercel, AWS Lambda, Netlify), the project root is strictly read-only.
     // The only writable directory is os.tmpdir() (/tmp).

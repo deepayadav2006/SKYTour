@@ -8,9 +8,12 @@ const seedDatabase = require('./config/seeder');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust reverse proxy (essential for Vercel, Render, Railway, cloud deployments)
+app.set('trust proxy', 1);
+
 // ─── View Engine ───────────────────────────────────────────
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(process.cwd(), 'views'));
 
 // ─── Static Files with guaranteed MIME types ────────────────
 const staticOptions = {
@@ -23,11 +26,12 @@ const staticOptions = {
     }
 };
 
-app.use(express.static(path.join(__dirname, 'public'), staticOptions));
-app.use('/public', express.static(path.join(__dirname, 'public'), staticOptions));
-app.use('/css', express.static(path.join(__dirname, 'public', 'css'), staticOptions));
-app.use('/js', express.static(path.join(__dirname, 'public', 'js'), staticOptions));
-app.use('/images', express.static(path.join(__dirname, 'public', 'images'), staticOptions));
+const publicDir = path.join(process.cwd(), 'public');
+app.use(express.static(publicDir, staticOptions));
+app.use('/public', express.static(publicDir, staticOptions));
+app.use('/css', express.static(path.join(publicDir, 'css'), staticOptions));
+app.use('/js', express.static(path.join(publicDir, 'js'), staticOptions));
+app.use('/images', express.static(path.join(publicDir, 'images'), staticOptions));
 
 // ─── Body Parsers ──────────────────────────────────────────
 app.use(express.urlencoded({ extended: true }));
@@ -41,6 +45,7 @@ app.use(session({
     cookie: {
         httpOnly: true,
         secure: false,
+        sameSite: 'lax',
         maxAge: 1000 * 60 * 60 * 24 // 24 hours
     }
 }));
